@@ -2,15 +2,13 @@ package parcelmanagementsystem;
 
 public class Parcel {
 
-    private int trackingNo;
+    private String trackingNo;
     private String senderName;
     private String receiverName;
     private double weight;
     private String status;
 
-    public Parcel(int trackingNo, String senderName,
-                  String receiverName, double weight,
-                  String status) {
+    public Parcel(String trackingNo, String senderName, String receiverName, double weight, String status) {
 
         this.trackingNo = trackingNo;
         this.senderName = senderName;
@@ -19,7 +17,7 @@ public class Parcel {
         this.status = status;
     }
 
-    public int getTrackingNo() {
+    public String getTrackingNo() {
         return trackingNo;
     }
 
@@ -39,7 +37,7 @@ public class Parcel {
         return status;
     }
 
-    public void setTrackingNo(int trackingNo) {
+    public void setTrackingNo(String trackingNo) {
         this.trackingNo = trackingNo;
     }
 
@@ -61,5 +59,9 @@ public class Parcel {
 
     public String getParcelType() {
         return "Parcel";
+    }
+    
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 }
