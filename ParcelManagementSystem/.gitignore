@@ -1,0 +1,26 @@
+# NetBeans-generated output
+/build/
+/dist/
+/nbbuild/
+/nbdist/
+
+# NetBeans private user settings
+/nbproject/private/
+
+# Compiled Java files
+*.class
+
+# Log and crash files
+*.log
+hs_err_pid*
+
+# SQLite temporary files
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+/ParcelManagementSystem/nbproject/private/
