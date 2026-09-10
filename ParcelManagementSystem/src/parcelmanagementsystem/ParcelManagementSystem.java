@@ -1,12 +1,11 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ * MUHAMMAD AIMAN BIN AZIZAN-251594704
  */
 package parcelmanagementsystem;
 
 /**
  *
- * @author USER
+ * 
  */
 public class ParcelManagementSystem {
 
