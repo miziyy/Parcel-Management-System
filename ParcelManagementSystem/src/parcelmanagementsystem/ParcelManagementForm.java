@@ -1,13 +1,37 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package parcelmanagementsystem;
 
-/**
- *
- * @author USER
- */
 public class ParcelManagementForm {
-    
+
+
+
+ // Polymorphsm
+        Parcel parcel;
+
+        if (type.equals("Express")) {
+
+            parcel = new ExpressParcel(
+                    tracking,
+                    sender,
+                    receiver,
+                    weight,
+                    status
+            );
+
+        } else {
+
+            parcel = new StandardParcel(
+                    tracking,
+                    sender,
+                    receiver,
+                    weight,
+                    status
+            );
+        }
+
+        return parcel;
+    }    
 }
+
+
+
