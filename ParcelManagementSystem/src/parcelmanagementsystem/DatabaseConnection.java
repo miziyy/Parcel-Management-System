@@ -7,6 +7,8 @@ package parcelmanagementsystem;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.DriverManager;
+import java.sql.Statement;
 
 public class DatabaseConnection {
 
@@ -18,6 +20,7 @@ public class DatabaseConnection {
 
     public static void createTable() {
 
+        //Set not null means must be fill
         String sql = """
                 CREATE TABLE IF NOT EXISTS parcel (
                     tracking_no TEXT PRIMARY KEY,
