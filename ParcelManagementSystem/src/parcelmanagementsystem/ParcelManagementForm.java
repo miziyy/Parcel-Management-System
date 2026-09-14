@@ -6,25 +6,33 @@ import java.awt.*;
 import java.sql.*;
 
 public class ParcelManagementForm extends JFrame {
-
+    
+    // text fields used to receive parcel information
     private JTextField txtTracking;
     private JTextField txtSender;
     private JTextField txtReceiver;
     private JTextField txtWeight;
-
+    
+    //allow user to choose parcel type
     private JComboBox<String> cmbType;
     private JComboBox<String> cmbStatus;
-
+    
+    //button for CRUD operation
     private JButton btnSave;
     private JButton btnUpdate;
     private JButton btnDelete;
     private JButton btnClear;
-
+    
+    //display all table from database
     private JTable table;
+    
+    //control data inside JTable
     private DefaultTableModel model;
 
     public ParcelManagementForm() {
-
+        
+        
+        //Title
         setTitle("Parcel Management System");
         setSize(950, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -38,7 +46,7 @@ public class ParcelManagementForm extends JFrame {
     }
 
     private void createGUI() {
-
+        //Border Layout
         setLayout(new BorderLayout());
 
 
@@ -51,7 +59,7 @@ public class ParcelManagementForm extends JFrame {
 
         add(lblTitle, BorderLayout.NORTH);
 
-
+        //Input panel
         JPanel inputPanel = new JPanel();
 
         inputPanel.setLayout(new GridLayout(6, 2, 10, 10));
@@ -94,7 +102,7 @@ public class ParcelManagementForm extends JFrame {
         inputPanel.add(cmbStatus);
 
 
-
+        //Button panel
         JPanel buttonPanel = new JPanel();
 
         btnSave = new JButton("Save");
@@ -136,7 +144,7 @@ public class ParcelManagementForm extends JFrame {
         add(topPanel, BorderLayout.CENTER);
         add(scrollPane, BorderLayout.SOUTH);
 
-
+        //button events
         btnSave.addActionListener(e -> saveParcel());
 
         btnUpdate.addActionListener(e -> updateParcel());
@@ -145,7 +153,7 @@ public class ParcelManagementForm extends JFrame {
 
         btnClear.addActionListener(e -> clearFields());
 
-
+        //table click event
         table.getSelectionModel().addListSelectionListener(e -> {
 
             if (!e.getValueIsAdjusting()) {
@@ -155,7 +163,7 @@ public class ParcelManagementForm extends JFrame {
         });
     }
 
-
+    //create object
     private Parcel createParcelObject() {
 
         String tracking = txtTracking.getText().trim();
@@ -242,7 +250,7 @@ public class ParcelManagementForm extends JFrame {
         return parcel;
     }
 
-
+     // SAVE / CREATE
     private void saveParcel() {
 
         Parcel parcel = createParcelObject();
@@ -333,7 +341,7 @@ public class ParcelManagementForm extends JFrame {
         }
     }
 
-
+    // READ / DISPLAY
     private void loadTable() {
 
         model.setRowCount(0);
@@ -390,7 +398,7 @@ public class ParcelManagementForm extends JFrame {
         }
     }
 
-
+    // Update parcel
     private void updateParcel() {
 
         Parcel parcel = createParcelObject();
@@ -484,7 +492,7 @@ public class ParcelManagementForm extends JFrame {
         }
     }
 
-
+    //delete parcel
     private void deleteParcel() {
 
         String tracking =
@@ -564,7 +572,7 @@ public class ParcelManagementForm extends JFrame {
         }
     }
 
-
+    //display selected row
     private void displaySelectedRow() {
 
         int row =
@@ -601,7 +609,7 @@ public class ParcelManagementForm extends JFrame {
         txtTracking.setEditable(false);
     }
 
-
+//Clear
     private void clearFields() {
 
         txtTracking.setText("");
