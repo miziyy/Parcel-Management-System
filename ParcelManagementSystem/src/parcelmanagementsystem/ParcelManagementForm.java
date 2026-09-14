@@ -1,6 +1,7 @@
-package parcelmanagementsystem;
+package parcel;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.sql.Connection;
@@ -44,7 +45,7 @@ public class ParcelManagementForm extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
 
-        DatabaseConnection.createTable();
+        dbconnection.createTable();
 
         createGUI();
         loadTable();
@@ -70,9 +71,12 @@ public class ParcelManagementForm extends JFrame {
 
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
 
-        //Input panel
+        //Input panel with title
         JPanel inputPanel = new JPanel(
-        new GridLayout(6, 2, 10, 10)
+        new GridLayout(3, 2, 10, 10)
+        );
+        inputPanel.setBorder(
+        BorderFactory.createTitledBorder(" Parcel Details ")
         );
 
         txtTracking = new JTextField();
@@ -94,34 +98,48 @@ public class ParcelManagementForm extends JFrame {
                 }
         );
 
-        inputPanel.add(new JLabel("Tracking Number:"));
-        inputPanel.add(txtTracking);
-
-        inputPanel.add(new JLabel("Sender Name:"));
-        inputPanel.add(txtSender);
-
-        inputPanel.add(new JLabel("Receiver Name:"));
-        inputPanel.add(txtReceiver);
-
-        inputPanel.add(new JLabel("Weight (KG):"));
-        inputPanel.add(txtWeight);
-
-        inputPanel.add(new JLabel("Parcel Type:"));
-        inputPanel.add(cmbType);
-
-        inputPanel.add(new JLabel("Parcel Status:"));
-        inputPanel.add(cmbStatus);
+        // Row 1
+        inputPanel.add(createInputRow("Tracking Number:", txtTracking));
+        inputPanel.add(createInputRow("Weight (KG):", txtWeight));
+        
+        // Row 2
+        inputPanel.add(createInputRow("Sender Name:", txtSender));
+        inputPanel.add(createInputRow("Parcel Type:", cmbType));
+        
+        // Row 3
+        inputPanel.add(createInputRow("Receiver Name:", txtReceiver));
+        inputPanel.add(createInputRow("Parcel Status:", cmbStatus));
 
 
         //Button panel
-        
-
         btnSave = new JButton("Save");
         btnUpdate = new JButton("Update");
         btnDelete = new JButton("Delete");
         btnClear = new JButton("Clear");
-
-        JPanel buttonPanel = new JPanel();
+        
+        // Colour button
+        java.awt.Color green = new java.awt.Color(46, 125, 50);
+        java.awt.Color blue = new java.awt.Color(21, 101, 192);
+        java.awt.Color red = new java.awt.Color(198, 40, 40);
+        java.awt.Color gray = new java.awt.Color(117, 117, 117);
+        
+        java.util.function.BiConsumer<JButton, java.awt.Color> styleButton = (btn, bg) -> {
+            btn.setPreferredSize(new java.awt.Dimension(100, 32));
+            btn.setBackground(bg);
+            btn.setForeground(java.awt.Color.WHITE);
+            btn.setFont(new Font("Arial", Font.BOLD, 13));
+            btn.setFocusPainted(false);
+            btn.setOpaque(true);
+            btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        };
+        
+        // Style each button
+        styleButton.accept(btnSave, green);
+        styleButton.accept(btnUpdate, blue);
+        styleButton.accept(btnDelete, red);
+        styleButton.accept(btnClear, gray);
+                
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         
         buttonPanel.add(btnSave);
         buttonPanel.add(btnUpdate);
@@ -135,11 +153,36 @@ public class ParcelManagementForm extends JFrame {
         topPanel.add(buttonPanel, BorderLayout.SOUTH);
 
 
+        // Search panel
+        JTextField txtSearch = new JTextField(15);
+        txtSearch.setPreferredSize(new java.awt.Dimension(180, 26));
+        
+        JButton btnSearch = new JButton("Search");
+        
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        searchPanel.add(new JLabel("Search:"));
+        searchPanel.add(txtSearch);
+        searchPanel.add(btnSearch);
+        
+        //Real time filter
+        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                String query = txtSearch.getText().trim().toLowerCase();
+                javax.swing.table.TableRowSorter<DefaultTableModel> sorter = 
+                        new javax.swing.table.TableRowSorter<>(model);
+                table.setRowSorter(sorter);
+                sorter.setRowFilter(javax.swing.RowFilter.regexFilter("?i" + query));
+            }
+        });
+        
+        
+        // Table
         String[] columns = {
             "Tracking No",
-            "Sender",
-            "Receiver",
-            "Weight",
+            "Sender Name",
+            "Receiver Name",
+            "Weight (KG)",
             "Type",
             "Status",
             "Delivery Fee"
@@ -155,16 +198,32 @@ public class ParcelManagementForm extends JFrame {
 
         table = new JTable(model);
         table.setRowHeight(25);
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
         table.setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION
         );
+        
+        // Align columns
+        javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        javax.swing.table.DefaultTableCellRenderer rightRenderer = new javax.swing.table.DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+        
+        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer); // Tracking No
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer); // Weight
+        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer); // Type
+        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer); // Status
+        table.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);  // Fee
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.add(searchPanel, BorderLayout.NORTH);
+        tablePanel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         // The form keeps its required height.
         // The table uses the remaining window space.
         mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(tablePanel, BorderLayout.CENTER);
 
         //button events
         btnSave.addActionListener(e -> saveParcel());
@@ -231,7 +290,7 @@ public class ParcelManagementForm extends JFrame {
 
         if ("Express".equals(type)) {
 
-            parcel = new ExpressParcel(
+            parcel = new eparcel(
                     tracking,
                     sender,
                     receiver,
@@ -241,7 +300,7 @@ public class ParcelManagementForm extends JFrame {
 
         } else {
 
-            parcel = new NormalParcel(
+            parcel = new nparcel(
                     tracking,
                     sender,
                     receiver,
@@ -274,7 +333,7 @@ public class ParcelManagementForm extends JFrame {
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        try (Connection conn = DatabaseConnection.connect();
+        try (Connection conn = dbconnection.connect();
             
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -313,7 +372,7 @@ public class ParcelManagementForm extends JFrame {
                 ORDER BY tracking_no
                 """;
 
-        try (Connection conn = DatabaseConnection.connect();
+        try (Connection conn = dbconnection.connect();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -380,7 +439,7 @@ public class ParcelManagementForm extends JFrame {
                 WHERE tracking_no = ?
                 """;
 
-        try (Connection conn = DatabaseConnection.connect();
+        try (Connection conn = dbconnection.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, parcel.getSenderName());
@@ -448,7 +507,7 @@ public class ParcelManagementForm extends JFrame {
                 WHERE tracking_no = ?
                 """;
 
-        try (Connection conn = DatabaseConnection.connect();
+        try (Connection conn = dbconnection.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, tracking);
@@ -562,6 +621,22 @@ public class ParcelManagementForm extends JFrame {
                 JOptionPane.ERROR_MESSAGE
         );
     }
+    
+    // Located input fields after their labels
+    private JPanel createInputRow(String labelText, JComponent inputComponent) {
+        JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
+        
+        JLabel label = new JLabel(labelText, SwingConstants.RIGHT);
+        label.setPreferredSize(new java.awt.Dimension(130, 25));
+        
+        inputComponent.setPreferredSize(new java.awt.Dimension(220, 25));
+        
+        rowPanel.add(label);
+        rowPanel.add(inputComponent);
+        
+        return rowPanel;
+    }
+    
 }
     
     
