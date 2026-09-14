@@ -13,6 +13,6 @@ public class NormalParcel extends Parcel {
 
     @Override
     public String getParcelType() {
-        return "Standard";
+        return "Normal";
     }
 }
