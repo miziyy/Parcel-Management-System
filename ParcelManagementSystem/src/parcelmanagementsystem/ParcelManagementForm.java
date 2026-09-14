@@ -1,9 +1,15 @@
 package parcelmanagementsystem;
 
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.sql.*;
 
 public class ParcelManagementForm extends JFrame {
     
@@ -36,20 +42,27 @@ public class ParcelManagementForm extends JFrame {
         setTitle("Parcel Management System");
         setSize(950, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        
 
         DatabaseConnection.createTable();
 
         createGUI();
-
         loadTable();
+        
+        setLocationRelativeTo(null);
     }
 
-    private void createGUI() {
-        //Border Layout
-        setLayout(new BorderLayout());
+     private void createGUI() {
 
+        // Main container
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        );
 
+        setContentPane(mainPanel);
+
+        // System title
         JLabel lblTitle = new JLabel(
                 "PARCEL MANAGEMENT SYSTEM",
                 SwingConstants.CENTER
@@ -57,12 +70,10 @@ public class ParcelManagementForm extends JFrame {
 
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
 
-        add(lblTitle, BorderLayout.NORTH);
-
         //Input panel
-        JPanel inputPanel = new JPanel();
-
-        inputPanel.setLayout(new GridLayout(6, 2, 10, 10));
+        JPanel inputPanel = new JPanel(
+        new GridLayout(6, 2, 10, 10)
+        );
 
         txtTracking = new JTextField();
         txtSender = new JTextField();
@@ -103,24 +114,23 @@ public class ParcelManagementForm extends JFrame {
 
 
         //Button panel
-        JPanel buttonPanel = new JPanel();
+        
 
         btnSave = new JButton("Save");
         btnUpdate = new JButton("Update");
         btnDelete = new JButton("Delete");
         btnClear = new JButton("Clear");
 
+        JPanel buttonPanel = new JPanel();
+        
         buttonPanel.add(btnSave);
         buttonPanel.add(btnUpdate);
         buttonPanel.add(btnDelete);
         buttonPanel.add(btnClear);
 
-        JPanel topPanel = new JPanel(new BorderLayout());
+        JPanel topPanel = new JPanel(new BorderLayout(10,15));
 
-        topPanel.setBorder(
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        );
-
+        topPanel.add(lblTitle, BorderLayout.NORTH);
         topPanel.add(inputPanel, BorderLayout.CENTER);
         topPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -135,14 +145,26 @@ public class ParcelManagementForm extends JFrame {
             "Delivery Fee"
         };
 
-        model = new DefaultTableModel(columns, 0);
+        model = new DefaultTableModel(columns, 0){
+        
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
         table = new JTable(model);
+        table.setRowHeight(25);
+        table.setSelectionMode(
+                ListSelectionModel.SINGLE_SELECTION
+        );
 
         JScrollPane scrollPane = new JScrollPane(table);
 
-        add(topPanel, BorderLayout.CENTER);
-        add(scrollPane, BorderLayout.SOUTH);
+        // The form keeps its required height.
+        // The table uses the remaining window space.
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
 
         //button events
         btnSave.addActionListener(e -> saveParcel());
@@ -171,11 +193,9 @@ public class ParcelManagementForm extends JFrame {
         String receiver = txtReceiver.getText().trim();
         String weightText = txtWeight.getText().trim();
 
-        String type =
-                cmbType.getSelectedItem().toString();
+        String type = (String) cmbType.getSelectedItem();
+        String status = (String) cmbStatus.getSelectedItem();
 
-        String status =
-                cmbStatus.getSelectedItem().toString();
 
         // VALIDATION
         if (tracking.isEmpty()
@@ -183,13 +203,7 @@ public class ParcelManagementForm extends JFrame {
                 || receiver.isEmpty()
                 || weightText.isEmpty()) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Please complete all fields.",
-                    "Validation Error",
-                    JOptionPane.WARNING_MESSAGE
-            );
-
+            showValidationMessage("Please complete all fields.");
             return null;
         }
 
@@ -201,32 +215,21 @@ public class ParcelManagementForm extends JFrame {
 
         } catch (NumberFormatException e) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Weight must be a number.",
-                    "Validation Error",
-                    JOptionPane.WARNING_MESSAGE
-            );
-
+            showValidationMessage("Weight must be a number.");
             return null;
         }
 
         if (weight <= 0) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Weight must be greater than 0 KG.",
-                    "Validation Error",
-                    JOptionPane.WARNING_MESSAGE
+            showValidationMessage("Weight must be a finite number greater than 0 KG."
             );
-
             return null;
         }
 
         // POLYMORPHISM
         Parcel parcel;
 
-        if (type.equals("Express")) {
+        if ("Express".equals(type)) {
 
             parcel = new ExpressParcel(
                     tracking,
@@ -271,73 +274,31 @@ public class ParcelManagementForm extends JFrame {
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        try (Connection conn =
-                     DatabaseConnection.connect();
+        try (Connection conn = DatabaseConnection.connect();
+            
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-             PreparedStatement pstmt =
-                     conn.prepareStatement(sql)) {
-
-            pstmt.setString(
-                    1,
-                    parcel.getTrackingNo()
-            );
-
-            pstmt.setString(
-                    2,
-                    parcel.getSenderName()
-            );
-
-            pstmt.setString(
-                    3,
-                    parcel.getReceiverName()
-            );
-
-            pstmt.setDouble(
-                    4,
-                    parcel.getWeight()
-            );
-
-            pstmt.setString(
-                    5,
-                    parcel.getParcelType()
-            );
-
-            pstmt.setString(
-                    6,
-                    parcel.getStatus()
-            );
-
-            // Polymorphic method
-            pstmt.setDouble(
-                    7,
-                    parcel.calculateDeliveryFee()
-            );
+            pstmt.setString(1, parcel.getTrackingNo());
+            pstmt.setString(2, parcel.getSenderName());
+            pstmt.setString(3, parcel.getReceiverName());
+            pstmt.setDouble(4, parcel.getWeight());
+            pstmt.setString(5, parcel.getParcelType());
+            pstmt.setString(6, parcel.getStatus());
+            pstmt.setDouble(7, parcel.calculateDeliveryFee());
 
             pstmt.executeUpdate();
 
             JOptionPane.showMessageDialog(
-                    this,
-                    "Parcel saved successfully!\n"
-                    + "Delivery Fee: RM "
-                    + String.format(
-                            "%.2f",
-                            parcel.calculateDeliveryFee()
-                    )
+                   this,
+                    "Parcel saved successfully!"
             );
 
             loadTable();
-
             clearFields();
 
         } catch (SQLException e) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Unable to save parcel.\n"
-                    + e.getMessage(),
-                    "Database Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            showDatabaseError("Unable to save parcel.", e);
         }
     }
 
@@ -352,14 +313,12 @@ public class ParcelManagementForm extends JFrame {
                 ORDER BY tracking_no
                 """;
 
-        try (Connection conn =
-                     DatabaseConnection.connect();
+        try (Connection conn = DatabaseConnection.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-             Statement stmt =
-                     conn.createStatement();
-
-             ResultSet rs =
-                     stmt.executeQuery(sql)) {
+            // Remove previous rows before loading records
+            model.setRowCount(0);
 
             while (rs.next()) {
 
@@ -388,18 +347,21 @@ public class ParcelManagementForm extends JFrame {
 
         } catch (SQLException e) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Unable to load parcel records.\n"
-                    + e.getMessage(),
-                    "Database Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            showDatabaseError("Unable to load parcel records.", e);
         }
     }
 
     // Update parcel
     private void updateParcel() {
+        
+        if (table.getSelectedRow() == -1) {
+
+            showValidationMessage(
+                    "Please select a parcel from the table first."
+            );
+
+            return;
+        }
 
         Parcel parcel = createParcelObject();
 
@@ -418,46 +380,16 @@ public class ParcelManagementForm extends JFrame {
                 WHERE tracking_no = ?
                 """;
 
-        try (Connection conn =
-                     DatabaseConnection.connect();
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-             PreparedStatement pstmt =
-                     conn.prepareStatement(sql)) {
-
-            pstmt.setString(
-                    1,
-                    parcel.getSenderName()
-            );
-
-            pstmt.setString(
-                    2,
-                    parcel.getReceiverName()
-            );
-
-            pstmt.setDouble(
-                    3,
-                    parcel.getWeight()
-            );
-
-            pstmt.setString(
-                    4,
-                    parcel.getParcelType()
-            );
-
-            pstmt.setString(
-                    5,
-                    parcel.getStatus()
-            );
-
-            pstmt.setDouble(
-                    6,
-                    parcel.calculateDeliveryFee()
-            );
-
-            pstmt.setString(
-                    7,
-                    parcel.getTrackingNo()
-            );
+            pstmt.setString(1, parcel.getSenderName());
+            pstmt.setString(2, parcel.getReceiverName());
+            pstmt.setDouble(3, parcel.getWeight());
+            pstmt.setString(4, parcel.getParcelType());
+            pstmt.setString(5, parcel.getStatus());
+            pstmt.setDouble(6, parcel.calculateDeliveryFee());
+            pstmt.setString(7, parcel.getTrackingNo());
 
             int result = pstmt.executeUpdate();
 
@@ -473,50 +405,39 @@ public class ParcelManagementForm extends JFrame {
                 clearFields();
 
             } else {
+                
+                showValidationMessage("Parcel record not found.");
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Parcel not found."
-                );
             }
 
         } catch (SQLException e) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Unable to update parcel.\n"
-                    + e.getMessage(),
-                    "Database Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            showDatabaseError("Unable to update parcel.", e);
         }
     }
 
     //delete parcel
     private void deleteParcel() {
 
-        String tracking =
-                txtTracking.getText().trim();
+        if (table.getSelectedRow() == -1) {
 
-        if (tracking.isEmpty()) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Please select a parcel first."
+            showValidationMessage(
+                    "Please select a parcel from the table first."
             );
 
             return;
         }
 
-        int confirm =
-                JOptionPane.showConfirmDialog(
-                        this,
-                        "Delete parcel "
-                        + tracking
-                        + "?",
-                        "Confirm Delete",
-                        JOptionPane.YES_NO_OPTION
-                );
+        String tracking = txtTracking.getText().trim();
+
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Delete parcel " + tracking + "?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
 
         if (confirm != JOptionPane.YES_OPTION) {
             return;
@@ -527,19 +448,13 @@ public class ParcelManagementForm extends JFrame {
                 WHERE tracking_no = ?
                 """;
 
-        try (Connection conn =
-                     DatabaseConnection.connect();
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-             PreparedStatement pstmt =
-                     conn.prepareStatement(sql)) {
+            pstmt.setString(1, tracking);
 
-            pstmt.setString(
-                    1,
-                    tracking
-            );
+            int result = pstmt.executeUpdate();
 
-            int result =
-                    pstmt.executeUpdate();
 
             if (result > 0) {
 
@@ -554,34 +469,26 @@ public class ParcelManagementForm extends JFrame {
 
             } else {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Parcel not found."
-                );
+                showValidationMessage("Parcel record not found.");
             }
 
         } catch (SQLException e) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Unable to delete parcel.\n"
-                    + e.getMessage(),
-                    "Database Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            showDatabaseError("Unable to delete parcel.", e);
         }
     }
 
     //display selected row
     private void displaySelectedRow() {
 
-        int row =
-                table.getSelectedRow();
+        int selectedRow = table.getSelectedRow();
 
-        if (row == -1) {
+        if (selectedRow == -1) {
             return;
         }
-
+        
+        int row = table.convertRowIndexToModel(selectedRow);
+        
         txtTracking.setText(
                 model.getValueAt(row, 0).toString()
         );
@@ -598,19 +505,27 @@ public class ParcelManagementForm extends JFrame {
                 model.getValueAt(row, 3).toString()
         );
 
+        String type = model.getValueAt(row, 4).toString();
+
+        // Accept either Normal or Standard for non-express parcels
         cmbType.setSelectedItem(
-                model.getValueAt(row, 4).toString()
+                "Express".equalsIgnoreCase(type)
+                        ? "Express"
+                        : "Standard"
         );
 
         cmbStatus.setSelectedItem(
                 model.getValueAt(row, 5).toString()
         );
 
+        // Keep the primary key unchanged during an update
         txtTracking.setEditable(false);
+        btnSave.setEnabled(false);
     }
 
 //Clear
     private void clearFields() {
+        table.clearSelection();
 
         txtTracking.setText("");
         txtSender.setText("");
@@ -621,7 +536,32 @@ public class ParcelManagementForm extends JFrame {
         cmbStatus.setSelectedIndex(0);
 
         txtTracking.setEditable(true);
+        btnSave.setEnabled(true);
 
-        table.clearSelection();
+        txtTracking.requestFocusInWindow();
+    }
+    private void showValidationMessage(String message) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                message,
+                "Validation Error",
+                JOptionPane.WARNING_MESSAGE
+        );
+    }
+
+    private void showDatabaseError(
+            String message,
+            SQLException exception
+    ) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                message + "\n" + exception.getMessage(),
+                "Database Error",
+                JOptionPane.ERROR_MESSAGE
+        );
     }
 }
+    
+    
