@@ -238,7 +238,7 @@ public class ParcelManagementForm extends JFrame {
 
         } else {
 
-            parcel = new StandardParcel(
+            parcel = new NormalParcel(
                     tracking,
                     sender,
                     receiver,
