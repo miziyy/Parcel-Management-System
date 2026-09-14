@@ -1,4 +1,5 @@
-package parcel;
+package parcelmanagementsystem;
+
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -45,7 +46,7 @@ public class ParcelManagementForm extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
 
-        dbconnection.createTable();
+        DatabaseConnection.createTable();
 
         createGUI();
         loadTable();
@@ -290,7 +291,7 @@ public class ParcelManagementForm extends JFrame {
 
         if ("Express".equals(type)) {
 
-            parcel = new eparcel(
+            parcel = new ExpressParcel(
                     tracking,
                     sender,
                     receiver,
@@ -300,7 +301,7 @@ public class ParcelManagementForm extends JFrame {
 
         } else {
 
-            parcel = new nparcel(
+            parcel = new NormalParcel(
                     tracking,
                     sender,
                     receiver,
@@ -333,7 +334,7 @@ public class ParcelManagementForm extends JFrame {
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        try (Connection conn = dbconnection.connect();
+        try (Connection conn = DatabaseConnection.connect();
             
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -372,7 +373,7 @@ public class ParcelManagementForm extends JFrame {
                 ORDER BY tracking_no
                 """;
 
-        try (Connection conn = dbconnection.connect();
+        try (Connection conn = DatabaseConnection.connect();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -439,7 +440,7 @@ public class ParcelManagementForm extends JFrame {
                 WHERE tracking_no = ?
                 """;
 
-        try (Connection conn = dbconnection.connect();
+        try (Connection conn = DatabaseConnection.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, parcel.getSenderName());
@@ -507,7 +508,7 @@ public class ParcelManagementForm extends JFrame {
                 WHERE tracking_no = ?
                 """;
 
-        try (Connection conn = dbconnection.connect();
+        try (Connection conn = DatabaseConnection.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, tracking);
