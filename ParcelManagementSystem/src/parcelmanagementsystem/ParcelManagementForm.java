@@ -173,7 +173,8 @@ public class ParcelManagementForm extends JFrame {
                 javax.swing.table.TableRowSorter<DefaultTableModel> sorter = 
                         new javax.swing.table.TableRowSorter<>(model);
                 table.setRowSorter(sorter);
-                sorter.setRowFilter(javax.swing.RowFilter.regexFilter("?i" + query));
+                sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(query))
+                );
             }
         });
         
