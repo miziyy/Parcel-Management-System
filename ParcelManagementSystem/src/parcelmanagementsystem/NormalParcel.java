@@ -1,8 +1,8 @@
 package parcelmanagementsystem;
 
-public class StandardParcel extends Parcel {
+public class NormalParcel extends Parcel {
 
-    public StandardParcel(String trackingNo, String senderName, String receiverName, double weight, String status) {
+    public NormalParcel(String trackingNo, String senderName, String receiverName, double weight, String status) {
         super(trackingNo, senderName, receiverName, weight, status);
     }
 
