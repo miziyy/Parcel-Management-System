@@ -8,7 +8,7 @@ import java.sql.Statement;
 
 public class DatabaseConnection {
 
-    private static final String URL = "jdbc:sqlite:parcel.db";
+    private static final String URL = "jdbc:sqlite:parcel_management.db";
 
     public static Connection connect() throws SQLException {
         return DriverManager.getConnection(URL);
