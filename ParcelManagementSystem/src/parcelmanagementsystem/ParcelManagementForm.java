@@ -73,7 +73,7 @@ public class ParcelManagementForm extends JFrame {
         txtReceiver = new JTextField();
         txtWeight = new JTextField();
 
-        cmbType = new JComboBox<>(new String[]{"Standard", "Express"});
+        cmbType = new JComboBox<>(new String[]{"Normal", "Express"});
 
         cmbStatus = new JComboBox<>(new String[]{
             "Pending",
@@ -471,11 +471,11 @@ public class ParcelManagementForm extends JFrame {
 
         String type = model.getValueAt(row, 4).toString();
 
-        // Accept either Normal or Standard for non-express parcels
+        // Accept either Normal or Normal for non-express parcels
         cmbType.setSelectedItem(
                 "Express".equalsIgnoreCase(type)
                         ? "Express"
-                        : "Standard"
+                        : "Normal"
         );
 
         cmbStatus.setSelectedItem(model.getValueAt(row, 5).toString());
