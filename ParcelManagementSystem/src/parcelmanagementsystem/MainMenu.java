@@ -63,19 +63,38 @@ public class MainMenu extends JFrame {
 
         add(panel);
 
-        // Open parcel management form
+        // Admin access for Manage Parcel
         btnManageParcel.addActionListener(e -> {
 
-            new ParcelManagementForm().setVisible(true);
+            String password = JOptionPane.showInputDialog(
+                    this,
+                    "Enter admin password:"
+            );
 
-            dispose();
+            if (password == null) {
+                return;
+            }
+
+            if (password.equals("12345")) {
+
+                new ParcelManagementForm().setVisible(true);
+                dispose();
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Incorrect admin password.",
+                        "Access Denied",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
         });
 
         // Open track parcel form
         btnTrackParcel.addActionListener(e -> {
 
             new TrackParcelForm().setVisible(true);
-
             dispose();
         });
 
