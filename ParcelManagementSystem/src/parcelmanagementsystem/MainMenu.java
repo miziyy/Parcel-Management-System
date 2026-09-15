@@ -29,7 +29,7 @@ public class MainMenu extends JFrame {
 
         // Title
         JLabel lblTitle = new JLabel("PARCEL MANAGEMENT SYSTEM");
-        lblTitle.setFont(new Font("Verdana", Font.BOLD, 30));
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 30));
         lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
         lblTitle.setBounds(50, 60, 500, 45);
 
