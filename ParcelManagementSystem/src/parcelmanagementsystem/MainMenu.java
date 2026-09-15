@@ -29,30 +29,42 @@ public class MainMenu extends JFrame {
 
         // Title
         JLabel lblTitle = new JLabel("PARCEL MANAGEMENT SYSTEM");
-        lblTitle.setFont(new Font("Arial", Font.BOLD, 28));
+        lblTitle.setFont(new Font("Verdana", Font.BOLD, 30));
         lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-        lblTitle.setBounds(70, 50, 460, 40);
+        lblTitle.setBounds(50, 60, 500, 45);
 
         // Welcome text
         JLabel lblWelcome = new JLabel("Welcome to the System");
-        lblWelcome.setFont(new Font("Arial", Font.PLAIN, 18));
+        lblWelcome.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         lblWelcome.setHorizontalAlignment(SwingConstants.CENTER);
-        lblWelcome.setBounds(150, 100, 300, 30);
+        lblWelcome.setBounds(150, 120, 300, 30);
 
         // Manage Parcel button
         btnManageParcel = new JButton("Manage Parcel");
-        btnManageParcel.setFont(new Font("Arial", Font.BOLD, 16));
-        btnManageParcel.setBounds(190, 160, 220, 45);
+        btnManageParcel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnManageParcel.setBounds(190, 180, 220, 45);
+        btnManageParcel.setBackground(new Color(25, 118, 210));
+        btnManageParcel.setForeground(Color.WHITE);
+        btnManageParcel.setFocusPainted(false);
+        btnManageParcel.setOpaque(true);
 
         // Track Parcel button
         btnTrackParcel = new JButton("Track Parcel");
-        btnTrackParcel.setFont(new Font("Arial", Font.BOLD, 16));
-        btnTrackParcel.setBounds(190, 220, 220, 45);
+        btnTrackParcel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnTrackParcel.setBounds(190, 240, 220, 45);
+        btnTrackParcel.setBackground(new Color(46, 125, 50));
+        btnTrackParcel.setForeground(Color.WHITE);
+        btnTrackParcel.setFocusPainted(false);
+        btnTrackParcel.setOpaque(true);
 
         // Exit button
         btnExit = new JButton("Exit");
-        btnExit.setFont(new Font("Arial", Font.BOLD, 16));
-        btnExit.setBounds(190, 280, 220, 45);
+        btnExit.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnExit.setBounds(190, 300, 220, 45);
+        btnExit.setBackground(new Color(198, 40, 40));
+        btnExit.setForeground(Color.WHITE);
+        btnExit.setFocusPainted(false);
+        btnExit.setOpaque(true);
 
         // Add components to panel
         panel.add(lblTitle);
