@@ -1,5 +1,5 @@
 package parcelmanagementsystem;
-        
+
 import javax.swing.SwingUtilities;
 
 public class Main {
@@ -8,10 +8,9 @@ public class Main {
 
         SwingUtilities.invokeLater(() -> {
 
-            ParcelManagementForm form =
-                    new ParcelManagementForm();
+            MainMenu menu = new MainMenu();
 
-            form.setVisible(true);
+            menu.setVisible(true);
         });
     }
 }

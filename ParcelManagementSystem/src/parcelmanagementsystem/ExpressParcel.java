@@ -11,7 +11,7 @@ public class ExpressParcel extends Parcel {
 
     @Override
     public double calculateDeliveryFee() {
-        return 10.00 + (getWeight() * 2.50);
+        return 10.00 + (getWeight() * 1.50);
     }
 
     @Override
